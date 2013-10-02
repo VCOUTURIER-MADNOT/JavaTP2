@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<users>
+	<user>
+		<userLevel>2</userLevel>
+		<login>admin001</login>
+		<name>Administrateur</name>
+		<password>8e5098d4451505935d6babade0d88f6f</password>
+		<homedirectory>users/admin001</homedirectory>
+	</user>
+	<user>
+		<userLevel>1</userLevel>
+		<login>user001</login>
+		<name>Utilisateur 1</name>
+		<password>ff5f0a30f031f9674d92933531df0180</password>
+		<homedirectory>users/user001</homedirectory>
+	</user>
+	<user>
+		<userLevel>1</userLevel>
+		<login>user002</login>
+		<name>Utilisateur 2</name>
+		<password>def162fa9ed740dea2ae908993975485</password>
+		<homedirectory>user2/user002</homedirectory>
+	</user>
+</users>
