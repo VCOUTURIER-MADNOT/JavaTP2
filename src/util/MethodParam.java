@@ -46,14 +46,15 @@ public class MethodParam {
 		this.paramsValue.clear();
 	}
 	
-	public void invokeMethod()
+	public Object invokeMethod()
 	{
 		try {
-			this.method.invoke(null, this.paramsValue);
+			return this.method.invoke(null, this.paramsValue);
 		} catch (IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		return null;
 	}
 }
