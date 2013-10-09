@@ -3,17 +3,11 @@ package server;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.Socket;
-import java.net.SocketException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
-import util.MethodParam;
+import util.MethodInvoker;
 
 public class RequestHandler {
 
@@ -37,7 +31,7 @@ public class RequestHandler {
 	{
 		String xmlString = util.Serialization.ByteArrayToXMLString(_datagramPacket.getData());
 		
-		final MethodParam mp = util.Serialization.XMLToMethod(xmlString);
+		final MethodInvoker mp = util.Serialization.XMLToMethod(xmlString);
 		final DatagramPacket dp = _datagramPacket;
 		
 		this.threadPool.submit(new Runnable() {
@@ -48,10 +42,7 @@ public class RequestHandler {
 				// Recupere le retour de la méthode
 				Object obj = mp.invokeMethod();
 				
-				// Recupere le type exacte du retour de la méthode
-				Class returnType = mp.getMethod().getReturnType();
-				
-				String xmlString = util.Serialization.ResultToXML(returnType.cast(obj));
+				String xmlString = util.Serialization.ResultToXML(obj);
 				
 				byte[] byteToSend = util.Serialization.StringToByteArray(xmlString);
 				

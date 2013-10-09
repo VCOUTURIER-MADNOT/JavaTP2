@@ -17,7 +17,9 @@ public class Serialization {
 	private static final String HEX_DIGITS = "0123456789abcdef";
 	
 	// Traitement du XML
-	public static MethodParam XMLToMethod(String _xmlString) {
+	public static MethodInvoker XMLToMethod(String _xmlString) {
+		
+		// TODO : Refaire
 		SAXBuilder sxb = new SAXBuilder();
 		try {
 			Document doc = sxb.build(_xmlString);
@@ -33,7 +35,7 @@ public class Serialization {
 				paramsValue.add(param.getText());
 			}
 			Method method = API.class.getMethod(nomMethode, (Class[]) paramsType.toArray());
-			MethodParam methodParam = new MethodParam(method, paramsValue);
+			MethodInvoker methodParam = new MethodInvoker(method, paramsValue);
 			
 			return methodParam;
 		} catch (JDOMException | IOException | ClassNotFoundException | NoSuchMethodException | SecurityException e) {

@@ -1,23 +1,39 @@
-import java.util.Map;
-import java.util.Set;
+import java.lang.reflect.Method;
 
-import server.API;
-import server.RequestHandler;
+import util.MethodInvoker;
 
 public class Main {
 	
 	public static void main(String[] args)
 	{
-		Map<String, Map<String, String>> methods = API.getMethods(true, "user001:user001password");
+//		Map<String, Map<String, String>> methods = API.getMethods(true, "user001:user001password");
+//		
+//		Set<String> set = methods.keySet();
+//		
+//		for (String s : set)
+//		{
+//			System.out.println(s + " " + methods.get(s));
+//		}		
 		
-		Set<String> set = methods.keySet();
+		Class c = null;
+		try {
+			c = Class.forName("server.API");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
 		
-		for (String s : set)
-		{
-			System.out.println(s + " " + methods.get(s));
-		}		
+		Method m = null;
 		
-		//RequestHandler rh = new RequestHandler();
+		try {
+			m = c.getMethod("testMethod", int.class, String.class);
+		} catch (NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
 		
+		MethodInvoker mp = new MethodInvoker(m, 1, "t");
+		
+		Object obj = mp.invokeMethod();
+		
+		System.out.print(obj);
 	}
 }
