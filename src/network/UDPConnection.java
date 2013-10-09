@@ -46,8 +46,7 @@ public class UDPConnection {
 		
 		return msg;
 	}
-
-
+	
 	public void write(String str) throws IOException {
 		if (str != null || str != ""){
 		    DatagramPacket packet = new DatagramPacket(str.getBytes(), str.getBytes().length, InetAddress.getByName(this.host), this.port);

@@ -56,7 +56,9 @@ public class API {
 		{
 			Element crtUser = (Element)i.next();
 			
-			if (crtUser.getChildText("login") == username){
+			String currentUser = crtUser.getChildText("login");
+			
+			if ( currentUser.equals(username)){
 				return crtUser;
 			}
 			
@@ -65,7 +67,7 @@ public class API {
 	}
 	
 	private static boolean checkCredentials(Element currentUser, String username, String password) {
-		return currentUser.getChildText("login") == username && currentUser.getChildText("password") == password;
+		return currentUser.getChildText("login").equals(username) && currentUser.getChildText("password").equals(util.Crypto.toMD5(password));
 	}
 	
 	
@@ -91,7 +93,7 @@ public class API {
 			// Recuperer les methodes de la classe API dont l'annotation correspond
 			
 			try {
-				Method[] APImethods = (Class.forName("API")).getMethods();
+				Method[] APImethods = (Class.forName("server.API")).getMethods();
 				
 				for(Method crtMethod : APImethods)
 				{
@@ -115,10 +117,11 @@ public class API {
 							
 							methods.put(crtMethod.getName(), params);
 							
-							return methods ;
 						}
 					}
 				}
+				
+				return methods ;
 				
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
@@ -129,9 +132,16 @@ public class API {
 	}
 	
 	@AUTHORIZED(protocol=Protocol.ALL, userlevel=1)
-	public static void testMethod()
+	public static String testMethod()
 	{
-		// Test Method
+		return "Test";
 	}
 
+	@AUTHORIZED(protocol=Protocol.UDP, userlevel=2)
+	public static int testMethode()
+	{
+		return 0;
+	}
+	
+	
 }
