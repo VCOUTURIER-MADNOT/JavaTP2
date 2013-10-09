@@ -27,6 +27,11 @@ public class API {
 		int userlevel() default 1;
 	}
 	
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface DESCRIPTION {
+		String menuDesc();
+	}
+	
 	//
 	
 	private static boolean openUtilisateursXMLFile()
@@ -97,13 +102,15 @@ public class API {
 				
 				for(Method crtMethod : APImethods)
 				{
+
+					
 					AUTHORIZED annotation = crtMethod.getAnnotation(AUTHORIZED.class);
 					if (annotation != null)
 					{
+						
 						if ((annotation.protocol() == Protocol.ALL || annotation.protocol() == (isUDP ? Protocol.UDP : Protocol.TCP)) && annotation.userlevel() <= currentUserLevel)
 						{
 							// Ajout de la methode dans la Map
-							
 							Map<String,String> params = new HashMap<String,String>();
 							
 							params.put("return", crtMethod.getReturnType().getSimpleName());
@@ -115,8 +122,14 @@ public class API {
 								params.put("param" + i, paramTypes[i].getSimpleName());
 							}
 							
-							methods.put(crtMethod.getName(), params);
 							
+							DESCRIPTION description = crtMethod.getAnnotation(DESCRIPTION.class);
+							if (description != null)
+							{	
+								params.put("menuDesc", description.menuDesc());
+							}
+							
+							methods.put(crtMethod.getName(), params);
 						}
 					}
 				}
@@ -132,12 +145,14 @@ public class API {
 	}
 	
 	@AUTHORIZED(protocol=Protocol.ALL, userlevel=1)
-	public static String testMethod()
+	@DESCRIPTION(menuDesc="Test Method")
+	public static String testMethod(int test, String t)
 	{
 		return "Test";
 	}
 
-	@AUTHORIZED(protocol=Protocol.UDP, userlevel=2)
+	@AUTHORIZED(protocol=Protocol.ALL, userlevel=1)
+	@DESCRIPTION(menuDesc="Test Methode")
 	public static int testMethode()
 	{
 		return 0;

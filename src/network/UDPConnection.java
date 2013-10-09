@@ -40,7 +40,7 @@ public class UDPConnection {
 		String msg;
 		
 		DatagramPacket packet = new DatagramPacket(bytesFromSocket, bytesFromSocket.length);
-		
+
 		this.s.receive(packet);
 		msg = new String(bytesFromSocket, 0, bytesFromSocket.length);
 		

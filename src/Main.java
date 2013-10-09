@@ -2,6 +2,7 @@ import java.util.Map;
 import java.util.Set;
 
 import server.API;
+import server.RequestHandler;
 
 public class Main {
 	
@@ -15,6 +16,8 @@ public class Main {
 		{
 			System.out.println(s + " " + methods.get(s));
 		}		
+		
+		//RequestHandler rh = new RequestHandler();
 		
 	}
 }
