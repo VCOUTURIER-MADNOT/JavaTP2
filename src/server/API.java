@@ -1,87 +1,137 @@
 package server;
 
 import java.io.File;
-import java.io.IOException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.input.SAXBuilder;
 
 public class API {
 
-	private static Document openUtilisateursXMLFile()
-	{
-		try{
-			// création d'une fabrique de documents
-			DocumentBuilderFactory fabrique = DocumentBuilderFactory.newInstance();
-			
-			// création d'un constructeur de documents
-			DocumentBuilder constructeur = fabrique.newDocumentBuilder();
-			
-			// lecture du contenu d'un fichier XML avec DOM
-			File xml = new File("utilisateurs.xml");
-			Document document = constructeur.parse(xml);
-			
-			return document;
-		
-		}catch(ParserConfigurationException pce){
-			System.out.println("Erreur de configuration du parseur DOM");
-			System.out.println("lors de l'appel à fabrique.newDocumentBuilder();");
-		}catch(SAXException se){
-			System.out.println("Erreur lors du parsing du document");
-			System.out.println("lors de l'appel à construteur.parse(xml)");
-		}catch(IOException ioe){
-			System.out.println("Erreur d'entrée/sortie");
-			System.out.println("lors de l'appel à construteur.parse(xml)");
-		}
-		
-		return null;
-
+	// ATTRIBUTES
+	
+	private static Element rootElement;
+	
+	public static enum Protocol { ALL, UDP, TCP };
+	
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface AUTHORIZED {
+		Protocol protocol() default Protocol.TCP;
+		int userlevel() default 1;
 	}
 	
-	private static Node getCurrentUserNode(Document document, String username) {
-		
-		NodeList users = document.getElementsByTagName("login");
-		
-		for (int i = 0; i < users.getLength(); ++i)
-		{
-			String user = users.item(i).getFirstChild().getNodeValue();
-			if (user.equals(username))
-			{
-				return users.item(i).getParentNode();
-			}
+	//
+	
+	private static boolean openUtilisateursXMLFile()
+	{
+		if (API.rootElement == null){
+		  SAXBuilder sxb = new SAXBuilder();
+	      try
+	      {
+	         Document document = sxb.build(new File("utilisateurs.xml"));
+		     API.rootElement = document.getRootElement();
+		     return true;
+	      }
+	      catch(Exception e){
+	    	  e.printStackTrace();
+	      }
+	      return false;
 		}
+		return true;
+	}
+	
+	private static Element getCurrentUserNode(String username) {
 		
+		List<Element> listUsers = API.rootElement.getChildren("user");
+		
+		Iterator<Element> i = listUsers.iterator();
+		while(i.hasNext())
+		{
+			Element crtUser = (Element)i.next();
+			
+			if (crtUser.getChildText("login") == username){
+				return crtUser;
+			}
+			
+		}
 		return null;
+	}
+	
+	private static boolean checkCredentials(Element currentUser, String username, String password) {
+		return currentUser.getChildText("login") == username && currentUser.getChildText("password") == password;
 	}
 	
 	
 	public static Map<String, Map<String, String>> getMethods(boolean isUDP, String connectionString)
 	{
+		// Charger le fichier si necessaire ou retourner null 
+		if(!API.openUtilisateursXMLFile()){ return null; }
+		
 		Map<String, Map<String, String>> methods = new HashMap<String, Map<String, String>>();
 		
 		// Recuperer le nom de l'utilisateur et son mot de passe (format username:password)
 		String username = connectionString.split(":")[0];
 		String password = connectionString.split(":")[1];
 		
-		// Recuperer niveau de droit de l'utilisateur grace la balise userLevel qui correspond pour l'utilisateur correspondant
-		Document utilisateurs = API.openUtilisateursXMLFile();
+		Element currentUser = API.getCurrentUserNode(username);
 		
-		Node currentUser = API.getCurrentUserNode(utilisateurs, username);
-		
-		System.out.println(currentUser.getFirstChild().getNodeValue());
-		
-		// Recuperer les methodes de la classe API dont l'annotation PROTO , USERLEVEL correspond
+		if (currentUser != null && API.checkCredentials(currentUser, username, password))
+		{
+			
+			// Recuperer niveau de droit de l'utilisateur grace la balise userLevel qui correspond pour l'utilisateur correspondant
+			int currentUserLevel = Integer.parseInt(currentUser.getChildText("userLevel"));
+			
+			// Recuperer les methodes de la classe API dont l'annotation correspond
+			
+			try {
+				Method[] APImethods = (Class.forName("API")).getMethods();
+				
+				for(Method crtMethod : APImethods)
+				{
+					AUTHORIZED annotation = crtMethod.getAnnotation(AUTHORIZED.class);
+					if (annotation != null)
+					{
+						if ((annotation.protocol() == Protocol.ALL || annotation.protocol() == (isUDP ? Protocol.UDP : Protocol.TCP)) && annotation.userlevel() <= currentUserLevel)
+						{
+							// Ajout de la methode dans la Map
+							
+							Map<String,String> params = new HashMap<String,String>();
+							
+							params.put("return", crtMethod.getReturnType().getSimpleName());
+							
+							Class[] paramTypes = crtMethod.getParameterTypes();
+							
+							for (int i = 0; i < paramTypes.length; i++)
+							{
+								params.put("param" + i, paramTypes[i].getSimpleName());
+							}
+							
+							methods.put(crtMethod.getName(), params);
+							
+							return methods ;
+						}
+					}
+				}
+				
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
 		
 		return null;
 	}
 	
+	@AUTHORIZED(protocol=Protocol.ALL, userlevel=1)
+	public static void testMethod()
+	{
+		// Test Method
+	}
 
 }
