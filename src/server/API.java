@@ -148,7 +148,7 @@ public class API {
 	@DESCRIPTION(menuDesc="Test Method")
 	public static String testMethod(int i, String t)
 	{
-		return "Test";
+		return i + " : " + t;
 	}
 
 	@AUTHORIZED(protocol=Protocol.ALL, userlevel=1)

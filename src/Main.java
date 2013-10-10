@@ -30,10 +30,10 @@ public class Main {
 			e.printStackTrace();
 		}
 		
-		MethodInvoker mp = new MethodInvoker(m, 1, "t");
+		MethodInvoker mp = new MethodInvoker(m, 1, "test");
 		
 		Object obj = mp.invokeMethod();
 		
-		System.out.print(obj);
+		System.out.print(util.Serialization.ResultToXML(obj));
 	}
 }

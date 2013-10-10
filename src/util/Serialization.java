@@ -10,6 +10,9 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.StaxDriver;
+
 import server.API;
 
 public class Serialization {
@@ -46,12 +49,8 @@ public class Serialization {
 	
 	public static String ResultToXML(Object result)
 	{
-		//TODO
-		Element racine = new Element("answer");
-
-		Document doc = new Document(racine);
-		
-		return null;
+		XStream builder = new XStream(new StaxDriver());
+		return builder.toXML(result);
 	}
 	
 	
