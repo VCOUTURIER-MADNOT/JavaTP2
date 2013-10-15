@@ -1,6 +1,8 @@
 package util;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -10,35 +12,72 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 
+import server.API;
+
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
 
-import server.API;
-
 public class Serialization {
 
+	
 	private static final String HEX_DIGITS = "0123456789abcdef";
+	
+	public static String getConnectionString(String _xmlString)
+	{
+		String connectionString = "";
+		SAXBuilder sxb = new SAXBuilder();
+		try {
+			
+			InputStream stream = new ByteArrayInputStream(_xmlString.getBytes("UTF-8"));
+
+			Document doc = sxb.build(stream);
+			Element racine = doc.getRootElement();
+			
+			connectionString = racine.getAttributeValue("connectionString");
+			
+		}catch (JDOMException | IOException | SecurityException e) {
+			e.printStackTrace();
+		}
+		return connectionString;
+	}
 	
 	// Traitement du XML
 	public static MethodInvoker XMLToMethod(String _xmlString) {
-		
-		// TODO : Refaire
 		SAXBuilder sxb = new SAXBuilder();
 		try {
-			Document doc = sxb.build(_xmlString);
+			
+			InputStream stream = new ByteArrayInputStream(_xmlString.getBytes("UTF-8"));
+
+			Document doc = sxb.build(stream);
 			Element racine = doc.getRootElement();
 			
 			String nomMethode = racine.getAttributeValue("method");
-			ArrayList<Class> paramsType = new ArrayList<Class>();
-			ArrayList<String> paramsValue = new ArrayList<String>();
 			
-			for(Element param : racine.getChildren("param"))
+			ArrayList<Class> paramsType = new ArrayList<Class>();
+			ArrayList<Object> paramsValue = new ArrayList<Object>();
+			
+			for(Element param : racine.getChildren())
 			{
-				paramsType.add(Class.forName(param.getAttributeValue("type")));
-				paramsValue.add(param.getText());
+				Class c = Class.forName(param.getName());
+				paramsType.add(c);
+
+				XStream builder = new XStream(new StaxDriver());
+				builder.alias(param.getName(), c);
+				Object obj = builder.fromXML("<?xml version=\"1.0\"?><"+param.getName()+">"+param.getText()+"</"+param.getName()+">");
+				
+				paramsValue.add(obj);
+				
+				
 			}
-			Method method = API.class.getMethod(nomMethode, (Class[]) paramsType.toArray());
-			MethodInvoker methodParam = new MethodInvoker(method, paramsValue);
+			
+			Class[] classes = new Class[paramsType.size()];
+			for (int i=0; i<paramsType.size(); i++)
+			{
+				classes[i] = paramsType.get(i);
+			}
+			
+			Method method = API.class.getMethod(nomMethode, classes);
+			MethodInvoker methodParam = new MethodInvoker(method, paramsValue.toArray());
 			
 			return methodParam;
 		} catch (JDOMException | IOException | ClassNotFoundException | NoSuchMethodException | SecurityException e) {
@@ -78,7 +117,7 @@ public class Serialization {
     
     public static String ByteArrayToXMLString(byte[] _byteArray) {
     	try {
-			return new String(_byteArray, "UTF-8");
+			return new String(_byteArray, "UTF-8").trim();
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}

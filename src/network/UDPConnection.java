@@ -12,9 +12,7 @@ public class UDPConnection {
 
     private static volatile UDPConnection instance = null;
  
-    
-	private String host = "127.0.0.1";
-	private int port = 10025;
+	private int port = 51511;
 
 
 	private DatagramSocket s = null;
@@ -49,7 +47,7 @@ public class UDPConnection {
 	
 	public void write(String str) throws IOException {
 		if (str != null || str != ""){
-		    DatagramPacket packet = new DatagramPacket(str.getBytes(), str.getBytes().length, InetAddress.getByName(this.host), this.port);
+		    DatagramPacket packet = new DatagramPacket(str.getBytes("UTF-8"), str.getBytes("UTF-8").length, InetAddress.getLocalHost(), this.port);
 		    this.s.send(packet);
 		}
 	}
@@ -64,10 +62,8 @@ public class UDPConnection {
  		UDPConnection u;
 		try {
 			u = UDPConnection.getInstance();
-	 		
-	 		u.write("Bonjour");
+	 		u.write("<action connectionString=\"user001:ff5f0a30f031f9674d92933531df0180\" method=\"testMethod\"><java.lang.Integer>1</java.lang.Integer><java.lang.String>Test</java.lang.String></action>");
 	 		System.out.println(u.read());
-	 		
 	 		u.destroy();
 		} catch (IOException e) {
 			e.printStackTrace();

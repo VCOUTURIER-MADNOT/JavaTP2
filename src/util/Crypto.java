@@ -20,5 +20,4 @@ public class Crypto {
         return hash;
     }
 	
-	
 }

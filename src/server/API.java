@@ -72,7 +72,7 @@ public class API {
 	}
 	
 	private static boolean checkCredentials(Element currentUser, String username, String password) {
-		return currentUser.getChildText("login").equals(username) && currentUser.getChildText("password").equals(util.Crypto.toMD5(password));
+		return currentUser.getChildText("login").equals(username) && currentUser.getChildText("password").equals(password);
 	}
 	
 	
@@ -146,9 +146,9 @@ public class API {
 	
 	@AUTHORIZED(protocol=Protocol.ALL, userlevel=1)
 	@DESCRIPTION(menuDesc="Test Method")
-	public static String testMethod(int i, String t)
+	public static String testMethod(Integer i, String t)
 	{
-		return i + " : " + t;
+		return i + " : " + t ;
 	}
 
 	@AUTHORIZED(protocol=Protocol.ALL, userlevel=1)
