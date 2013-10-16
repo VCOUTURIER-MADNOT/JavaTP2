@@ -2,9 +2,6 @@ package util;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-
-import server.API;
 
 public class MethodInvoker {
 	private Method method;

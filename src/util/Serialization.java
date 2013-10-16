@@ -125,4 +125,16 @@ public class Serialization {
     	return null;
     }
 	
+    public static String MethodToXML(String connectionString, String methodName, Object ... params)
+    {
+		String resultXML =  "<action connectionString=\""+ connectionString +"\" method=\""+methodName+"\">";
+		
+		for (int i = 0; i < params.length; i++)
+		{
+			resultXML += "<" + params[i].getClass().getName() + ">" + params[i] + "</" + params[i].getClass().getName() + ">";
+		}
+		
+		resultXML += "</action>";
+		return resultXML;
+    }
 }

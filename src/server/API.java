@@ -19,11 +19,8 @@ public class API {
 	
 	private static Element rootElement;
 	
-	public static enum Protocol { ALL, UDP, TCP };
-	
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface AUTHORIZED {
-		Protocol protocol() default Protocol.TCP;
 		int userlevel() default 1;
 	}
 	
@@ -108,7 +105,7 @@ public class API {
 					if (annotation != null)
 					{
 						
-						if ((annotation.protocol() == Protocol.ALL || annotation.protocol() == (isUDP ? Protocol.UDP : Protocol.TCP)) && annotation.userlevel() <= currentUserLevel)
+						if (annotation.userlevel() <= currentUserLevel)
 						{
 							// Ajout de la methode dans la Map
 							Map<String,String> params = new HashMap<String,String>();
@@ -144,18 +141,19 @@ public class API {
 		return null;
 	}
 	
-	@AUTHORIZED(protocol=Protocol.ALL, userlevel=1)
+	@AUTHORIZED(userlevel=1)
 	@DESCRIPTION(menuDesc="Test Method")
 	public static String testMethod(Integer i, String t)
 	{
 		return i + " : " + t ;
 	}
 
-	@AUTHORIZED(protocol=Protocol.ALL, userlevel=1)
-	@DESCRIPTION(menuDesc="Test Methode")
-	public static int testMethode()
+	@AUTHORIZED(userlevel=1)
+	public static int connect(String username)
 	{
-		return 0;
+		Element currentUser = getCurrentUserNode(username);
+		int currentUserLevel = Integer.parseInt(currentUser.getChildText("userLevel"));
+		return currentUserLevel;
 	}
 	
 	
