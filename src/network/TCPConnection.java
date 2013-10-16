@@ -29,7 +29,7 @@ public class TCPConnection implements Connection {
 	public String readData() throws IOException{
 
 		char[] byteReceived = new char[1024];
-		reader.read(byteReceived);
+		reader.read(byteReceived, 0, 1024);
 	 	String s = new String(byteReceived).trim();
 	 	
 	 	if(s.startsWith("<error>"))
@@ -39,6 +39,7 @@ public class TCPConnection implements Connection {
 	}
 
 	public void write(String str) throws IOException{
+		
 		if (str != null){
 			writer.write(str);
 			writer.flush();

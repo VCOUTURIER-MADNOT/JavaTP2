@@ -107,7 +107,7 @@ public class RequestHandler {
 		
 		String connectionString = util.Serialization.getConnectionString(xmlString);
 		
-		Map<String, Map<String, String>> m = API.getMethods(connectionString);
+		Map<String, Map<String, String>> m = API.getMethods( connectionString);
 		
 		String methodName = mp.getMethod().getName();
 		
