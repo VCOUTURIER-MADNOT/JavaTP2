@@ -8,14 +8,14 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 
 
-public final class TCPConnection {
+public final class TCPConnection implements Connection {
 
 	
     private static volatile TCPConnection instance = null;
  
     
 	private String host = "0.0.0.0";
-	private int port = 51512;
+	private int port = 51510;
 	
 	private Socket s = null;
 	private BufferedWriter writer = null;
@@ -40,12 +40,11 @@ public final class TCPConnection {
         return TCPConnection.instance;
     }
 
-	public String readLine() throws IOException{
-		String ligne;
-		if ((ligne = reader.readLine()) != null){
-			return ligne;
-		}
-		return "";
+	public String readData() throws IOException{
+		char[] byteReceived = new char[1024];
+		reader.read(byteReceived, 0, 1024);
+	 	String s = new String(byteReceived);
+		return s.trim();
 	}
 
 	public void write(String str) throws IOException{
@@ -65,9 +64,9 @@ public final class TCPConnection {
  	public static void main(String[] args){
  		try {
  			TCPConnection sc = TCPConnection.getInstance();
- 			sc.write("<action connectionString=\"user001:ff5f0a30f031f9674d92933531df0180\" method=\"testMethod\"><java.lang.Integer>1</java.lang.Integer><java.lang.String>Test</java.lang.String></action>");
- 			System.out.println("Recu " + sc.readLine());
- 			sc.destroy();
+ 			sc.write("<action connectionString=\"user001:ff5f0a30f031f9674d92933531df0180\" method=\"connect\"><string>user001</string></action>");
+ 	 		System.out.println(sc.readData());
+ 	 		sc.destroy();
  		}
  		catch (IOException io){
  			System.out.println(io.getMessage());

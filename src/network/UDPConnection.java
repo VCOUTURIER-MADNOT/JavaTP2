@@ -7,7 +7,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 
 
-public class UDPConnection {
+public class UDPConnection implements Connection {
 
 
     private static volatile UDPConnection instance = null;
@@ -33,7 +33,7 @@ public class UDPConnection {
     }
 
 
-	public String read() throws IOException{
+	public String readData() throws IOException{
 		byte[] bytesFromSocket = new byte[1024];
 		String msg;
 		
@@ -42,7 +42,7 @@ public class UDPConnection {
 		this.s.receive(packet);
 		msg = new String(bytesFromSocket, 0, bytesFromSocket.length);
 		
-		return msg;
+		return msg.trim();
 	}
 	
 	public void write(String str) throws IOException {
@@ -59,12 +59,12 @@ public class UDPConnection {
  	
  	public static void main(String[] args)
  	{
- 		UDPConnection u;
+ 		UDPConnection sc;
 		try {
-			u = UDPConnection.getInstance();
-	 		u.write("<action connectionString=\"user001:ff5f0a30f031f9674d92933531df0180\" method=\"testMethod\"><java.lang.Integer>1</java.lang.Integer><java.lang.String>Test</java.lang.String></action>");
-	 		System.out.println(u.read());
-	 		u.destroy();
+			sc = UDPConnection.getInstance();
+	 		sc.write("<action connectionString=\"user001:ff5f0a30f031f9674d92933531df0180\" method=\"testMethod\"><java.lang.Integer>1</java.lang.Integer><java.lang.String>Test</java.lang.String></action>");
+	 		System.out.println(sc.readData());
+	 		sc.destroy();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

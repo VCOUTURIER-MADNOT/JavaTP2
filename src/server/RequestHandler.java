@@ -20,7 +20,6 @@ public class RequestHandler {
 		this.threadPool = Executors.newCachedThreadPool();
 	}
 		
-	
 	public void register(Socket _s)
 	{
 
