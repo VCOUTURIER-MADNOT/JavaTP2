@@ -129,6 +129,7 @@ public class RequestHandler {
 		{
 			this.threadPool.execute(new Runnable() {
 				
+				@SuppressWarnings("resource")
 				@Override
 				public void run() {
 					
@@ -159,6 +160,7 @@ public class RequestHandler {
 		{
 			this.threadPool.execute(new Runnable() {
 				
+				@SuppressWarnings("resource")
 				@Override
 				public void run() {
 					

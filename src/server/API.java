@@ -112,7 +112,7 @@ public class API {
 							
 							params.put("return", crtMethod.getReturnType().getSimpleName());
 							
-							Class[] paramTypes = crtMethod.getParameterTypes();
+							Class<?>[] paramTypes = crtMethod.getParameterTypes();
 							
 							for (int i = 0; i < paramTypes.length; i++)
 							{

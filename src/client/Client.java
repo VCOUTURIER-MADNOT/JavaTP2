@@ -22,6 +22,7 @@ public class Client {
 		this.builder = new XStream(new StaxDriver());
 	}
 
+	@SuppressWarnings("unchecked")
 	public void launch() {
 		// Recuperer liste availableMethods
 		try {

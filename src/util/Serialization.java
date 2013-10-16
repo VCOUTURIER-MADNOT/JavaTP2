@@ -53,12 +53,12 @@ public class Serialization {
 			
 			String nomMethode = racine.getAttributeValue("method");
 			
-			ArrayList<Class> paramsType = new ArrayList<Class>();
+			ArrayList<Class<?>> paramsType = new ArrayList<Class<?>>();
 			ArrayList<Object> paramsValue = new ArrayList<Object>();
 			
 			for(Element param : racine.getChildren())
 			{
-				Class c = Class.forName(param.getName());
+				Class<?> c = Class.forName(param.getName());
 				paramsType.add(c);
 
 				XStream builder = new XStream(new StaxDriver());
@@ -70,7 +70,7 @@ public class Serialization {
 				
 			}
 			
-			Class[] classes = new Class[paramsType.size()];
+			Class<?>[] classes = new Class[paramsType.size()];
 			for (int i=0; i<paramsType.size(); i++)
 			{
 				classes[i] = paramsType.get(i);
@@ -125,6 +125,8 @@ public class Serialization {
     	return null;
     }
 	
+    
+    //TODO
     public static String MethodToXML(String connectionString, String methodName, Object ... params)
     {
 		String resultXML =  "<action connectionString=\""+ connectionString +"\" method=\""+methodName+"\">";
