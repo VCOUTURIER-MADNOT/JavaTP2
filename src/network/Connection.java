@@ -6,5 +6,5 @@ public interface Connection {
 
 	String readData() throws IOException;
 	void write(String str) throws IOException;
-	
+	void destroy() throws IOException;
 }

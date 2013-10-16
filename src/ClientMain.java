@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.util.Map;
 import java.util.Scanner;
 
 import network.TCPConnection;
@@ -29,22 +30,23 @@ public class ClientMain {
 			String connectionString = username + ":" + util.Crypto.toMD5(password);
 			
 			TCPConnection tcpCo = new TCPConnection();
+			UDPConnection udpCo = new UDPConnection();
 			
 			// Recuperation du userLevel
 			tcpCo.write(util.Serialization.MethodToXML(connectionString, "connect", username));
-			
-			Integer userLevel = (Integer)builder.fromXML(tcpCo.readData());
+			Integer userLevel = (Integer)builder.fromXML(tcpCo.readData());			
+
 			Client c;
 			if (userLevel > 1)
 			{
-				c = new Client(connectionString, true, new UDPConnection());
+				c = new Client(connectionString, true, udpCo);
 			}
 			else 
 			{
-				c = new Client(connectionString, false, new TCPConnection());
+				c = new Client(connectionString, false, tcpCo);
 			}
+			
 			c.launch();
-			System.out.println(userLevel);
 
 		} catch (IOException e) {
 			System.out.println("Couple utilisateur / mot de passe incorrect ou accès interdit");

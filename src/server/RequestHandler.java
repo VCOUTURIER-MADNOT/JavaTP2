@@ -22,79 +22,93 @@ public class RequestHandler {
 		
 	public void register(Socket _s)
 	{
-
-		InputStream is;
-
-		byte[] byteToReceive = new byte[1024];
-		
-		try {
-			is = _s.getInputStream();
-			is.read(byteToReceive);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		String xmlString = util.Serialization.ByteArrayToXMLString(byteToReceive);
-		
-		final MethodInvoker mp = util.Serialization.XMLToMethod(xmlString);
-		final Socket s = _s;
-		
-		String connectionString = util.Serialization.getConnectionString(xmlString);
-		
-		Map<String, Map<String, String>> m = API.getMethods(connectionString);
-		
-		String methodName = mp.getMethod().getName();
-		
-		if (m != null && m.containsKey(methodName))
+		while(!_s.isClosed())
 		{
-			this.threadPool.execute(new Runnable() {
-				
-				@Override
-				public void run() {
-					
-					// Recupere le retour de la méthode
-					
-					Object obj = mp.invokeMethod();
-					
-					String xmlString = util.Serialization.ResultToXML(obj);
-					
-					byte[] byteToSend = util.Serialization.StringToByteArray(xmlString);
-					
-					try {
-						
-						OutputStream os = s.getOutputStream();
-						os.write(byteToSend);
-						os.flush();
-						
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-				
-			});
-		}
+			InputStream is;
 			
-		else 
-		{
-			this.threadPool.execute(new Runnable() {
-				
-				@Override
-				public void run() {
-					
-					String xmlString = "<error>Incorrect credentials or insufficient user access</error>";
-					
-					byte[] byteToSend = util.Serialization.StringToByteArray(xmlString);
-					
-					try {
-						OutputStream os = s.getOutputStream();
-						os.write(byteToSend);
-						os.flush();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+			byte[] byteToReceive = new byte[1024];
+			
+			try {
+				is = _s.getInputStream();
+				is.read(byteToReceive,0,1024);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			String xmlString = util.Serialization.ByteArrayToXMLString(byteToReceive);
+			
+			// Pas propre mais permet de savoir si la connexion distante a été fermée
+			if (xmlString.equals(""))
+			{
+				try {
+					_s.close();
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
+				return;
+			}
+			
+			final MethodInvoker mp = util.Serialization.XMLToMethod(xmlString);
+			final Socket s = _s;
+			
+			String connectionString = util.Serialization.getConnectionString(xmlString);
+			
+			Map<String, Map<String, String>> m = API.getMethods(connectionString);
+			
+			String methodName = mp.getMethod().getName();
+			
+			if (m != null && m.containsKey(methodName))
+			{
+				this.threadPool.execute(new Runnable() {
+					
+					@Override
+					public void run() {
+						
+						// Recupere le retour de la méthode
+						
+						Object obj = mp.invokeMethod();
+						
+						String xmlString = util.Serialization.ResultToXML(obj);
+						
+						byte[] byteToSend = util.Serialization.StringToByteArray(xmlString);
+						
+						try {
+							
+							OutputStream os = s.getOutputStream();
+							os.write(byteToSend);
+							os.flush();
+							
+							
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+					
+				});
+			}
 				
-			});
+			else 
+			{
+				this.threadPool.execute(new Runnable() {
+					
+					@Override
+					public void run() {
+						
+						String xmlString = "<error>Incorrect credentials or insufficient user access</error>";
+						
+						byte[] byteToSend = util.Serialization.StringToByteArray(xmlString);
+						
+						try {
+							OutputStream os = s.getOutputStream();
+							os.write(byteToSend);
+							os.flush();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+					
+				});
+			}
 		}
 	}
 	

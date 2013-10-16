@@ -25,19 +25,21 @@ public class Client {
 	public void launch() {
 		// Recuperer liste availableMethods
 		try {
+			
 			co.write(util.Serialization.MethodToXML(this.connectionString, "availableMethods", this.connectionString));
 			Map<String, Map<String,String>> methods = (Map<String, Map<String, String>>) builder.fromXML(co.readData());
 			
-			co.write(util.Serialization.MethodToXML(this.connectionString, "availableMethods", this.connectionString));
-			Map<String, Map<String,String>> methods2 = (Map<String, Map<String, String>>) builder.fromXML(co.readData());
+			// Gestion du menu
 			
+			
+			
+			// Appel des fonctions
+			
+			co.destroy();
 			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		// Construction du menu
-		// Appel des fonctions
 	}
 
 }
