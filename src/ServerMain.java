@@ -21,8 +21,8 @@ public class ServerMain {
 			
 			ServerSocket socketServer = new ServerSocket(51512);
 			
-				Socket s = socketServer.accept();
-				rh.register(s);
+			while(true)
+				rh.register(socketServer.accept());
 			
 			
 		} catch (IOException e) {
