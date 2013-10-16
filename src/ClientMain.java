@@ -28,37 +28,26 @@ public class ClientMain {
 			
 			String connectionString = username + ":" + util.Crypto.toMD5(password);
 			
-			TCPConnection tcpCo = TCPConnection.getInstance();
+			TCPConnection tcpCo = new TCPConnection();
 			
 			// Recuperation du userLevel
 			tcpCo.write(util.Serialization.MethodToXML(connectionString, "connect", username));
-			if (!tcpCo.readData().startsWith("<error>"))
+			
+			Integer userLevel = (Integer)builder.fromXML(tcpCo.readData());
+			Client c;
+			if (userLevel > 1)
 			{
-				Integer userLevel = (Integer)builder.fromXML(tcpCo.readData());
-				Client c;
-				if (userLevel > 1)
-				{
-					c = new Client(connectionString, UDPConnection.getInstance());
-				}
-				else 
-				{
-					c = new Client(connectionString, TCPConnection.getInstance());
-				}
-				System.out.println(userLevel);
+				c = new Client(connectionString, true, new UDPConnection());
 			}
 			else 
 			{
-				System.out.println("Couple utilisateur/mot de passe incorrect");
+				c = new Client(connectionString, false, new TCPConnection());
 			}
+			c.launch();
+			System.out.println(userLevel);
+
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("Couple utilisateur / mot de passe incorrect ou accès interdit");
 		}
-		
-		// Si uL >1 : Instanciation d'un Client avec UDPConnection
-		// Sinon Instanciation d'un Client avec TCPConnection 
-		
-		// Recuperation du availableMethods
-		// Construction du menu
-		// Appel des fonctions
 	}
 }

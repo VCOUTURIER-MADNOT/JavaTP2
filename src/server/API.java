@@ -73,7 +73,7 @@ public class API {
 	}
 	
 	
-	public static Map<String, Map<String, String>> getMethods(boolean isUDP, String connectionString)
+	public static Map<String, Map<String, String>> getMethods(String connectionString)
 	{
 		// Charger le fichier si necessaire ou retourner null 
 		if(!API.openUtilisateursXMLFile()){ return null; }
@@ -142,10 +142,9 @@ public class API {
 	}
 	
 	@AUTHORIZED(userlevel=1)
-	@DESCRIPTION(menuDesc="Test Method")
-	public static String testMethod(Integer i, String t)
+	public static Map<String, Map<String, String>> availableMethods(String connectionString)
 	{
-		return i + " : " + t ;
+		return API.getMethods(connectionString);
 	}
 
 	@AUTHORIZED(userlevel=1)
