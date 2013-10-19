@@ -11,19 +11,18 @@ import com.thoughtworks.xstream.io.xml.StaxDriver;
 public class Client {
 
 	private String connectionString;
-	private boolean isUDP;
 	private Connection co;
 	private XStream builder;
 	
-	public Client(String _connectionString, boolean _isUDP, Connection _co) {
+	public Client(String _connectionString, Connection _co) {
 		this.connectionString = _connectionString;
-		this.isUDP = _isUDP;
 		this.co = _co;
 		this.builder = new XStream(new StaxDriver());
 	}
 
 	@SuppressWarnings("unchecked")
 	public void launch() {
+		
 		// Recuperer liste availableMethods
 		try {
 			

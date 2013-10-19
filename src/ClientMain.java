@@ -38,11 +38,11 @@ public class ClientMain {
 			Client c;
 			if (userLevel > 1)
 			{
-				c = new Client(connectionString, true, udpCo);
+				c = new Client(connectionString, udpCo);
 			}
 			else 
 			{
-				c = new Client(connectionString, false, tcpCo);
+				c = new Client(connectionString, tcpCo);
 			}
 			
 			c.launch();
